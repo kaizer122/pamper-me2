@@ -1,0 +1,3 @@
+# Marketplace and SaaS are one bundled product; SaaS is required for listing
+
+Pamper Me is a beauty & wellness marketplace bundled with a provider-facing SaaS (calendar, ServiceOfferings, basic client list). To list on the marketplace, a Business must use the bundled SaaS — the marketplace's promise of real-time availability is only honest when bookings flow into the Practitioner's actual calendar. We considered profile-only listings with optional SaaS, and two loosely coupled products sharing only an account system; we picked the bundled model because it gives one source of truth for availability and one domain model. The SaaS surface kept in the required tier is intentionally minimal; paid features (marketing, advanced analytics, payroll) layer on top.

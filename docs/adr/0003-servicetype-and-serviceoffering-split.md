@@ -1,0 +1,3 @@
+# Service is split into ServiceType (global catalog) and ServiceOffering (per-Business)
+
+A bookable item is modeled as a ServiceOffering (per-Business price, duration, name, Practitioner eligibility) categorized under one or more ServiceTypes from a globally curated catalog owned by the platform. The marketplace searches and filters by ServiceType; the Business's own UI shows their custom Offering name. We rejected a global-catalog-only model (too rigid — Businesses can't name "Sophia's Signature Balayage") and a per-Business free-text catalog with free-text search (too noisy for marketplace quality). Curating the ServiceType catalog is a platform responsibility, not a feature surface for Businesses.

@@ -1,0 +1,3 @@
+# Booking is bound to exactly one Practitioner from creation, never floating
+
+When a Client picks "any available Practitioner" at booking time, the system resolves a specific Practitioner immediately and the Booking is created already bound to them. The "any available" intent is preserved as BookingIntent metadata so the Business can apply a more permissive reassignment policy if the Practitioner becomes unavailable, but the Practitioner field on a Booking is never null. We rejected leaving Practitioner unbound until check-in because it creates ambiguity for calendar visibility, no-show handling, and payouts. Reassignment is an explicit flow that creates a new Booking-Practitioner binding, not a state where Practitioner is null.
