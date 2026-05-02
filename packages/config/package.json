@@ -2,6 +2,7 @@
   "name": "@pamper-me/config",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "exports": {
     ".": "./index.ts",
     "./tsconfig.base": "./tsconfig.base.json",
