@@ -1,0 +1,5 @@
+{
+  "extends": "@pamper-me/config/tsconfig.app",
+  "compilerOptions": { "outDir": "dist", "rootDir": "src" },
+  "include": ["src"]
+}

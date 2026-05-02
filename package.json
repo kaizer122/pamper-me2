@@ -1,6 +1,7 @@
 {
   "name": "pamper-me",
   "private": true,
+  "packageManager": "bun@1.3.4",
   "workspaces": ["apps/*", "packages/*", "e2e"],
   "scripts": {
     "dev": "turbo run dev --parallel",
