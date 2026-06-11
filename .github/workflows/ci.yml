@@ -18,7 +18,7 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
@@ -28,7 +28,7 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
@@ -38,7 +38,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
@@ -65,7 +65,7 @@ jobs:
       BETTER_AUTH_SECRET: ci-test-secret-at-least-32-characters-long
       BETTER_AUTH_URL: http://localhost:3000
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
@@ -102,7 +102,7 @@ jobs:
       BOOTSTRAP_ADMIN_PASSWORD: e2e-test-password-123!
       VITE_API_URL: http://localhost:3000
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
@@ -134,7 +134,7 @@ jobs:
             sleep 1
           done
       - run: bunx playwright test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
