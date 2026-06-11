@@ -1,6 +1,6 @@
 import { getDb } from "../packages/db/src/client.js";
 import * as schema from "../packages/db/src/schema/index.js";
-import { eq } from "drizzle-orm";
+import { eq } from "../packages/db/src/index.js";
 
 const BOOTSTRAP_ADMIN_EMAIL =
   process.env["BOOTSTRAP_ADMIN_EMAIL"] ?? "admin@pamper.me";
