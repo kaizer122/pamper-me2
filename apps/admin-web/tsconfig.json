@@ -1,0 +1,10 @@
+{
+  "extends": "@pamper-me/config/tsconfig.app",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src", "vite.config.ts"]
+}
