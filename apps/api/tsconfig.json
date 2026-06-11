@@ -1,0 +1,10 @@
+{
+  "extends": "@pamper-me/config/tsconfig.base",
+  "compilerOptions": {
+    "types": ["bun-types"],
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src", "bun.test.ts"]
+}
