@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUN_VERSION: "1.2.x"
+
+jobs:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - run: bun install --frozen-lockfile
+      - run: bunx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore --ignore-path .prettierignore
+
+  test-api:
+    name: API Tests + Migration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pamper
+          POSTGRES_PASSWORD: pamper
+          POSTGRES_DB: pamper_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://pamper:pamper@localhost:5432/pamper_test
+      BETTER_AUTH_SECRET: ci-test-secret-at-least-32-characters-long
+      BETTER_AUTH_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - run: bun install --frozen-lockfile
+      - name: Run Drizzle migrations
+        run: bunx drizzle-kit migrate
+        working-directory: packages/db
+      - name: Run API tests
+        run: bun test
+        working-directory: apps/api
+
+  e2e:
+    name: E2E Smoke Tests
+    runs-on: ubuntu-latest
+    needs: [typecheck, lint, test-api]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: pamper
+          POSTGRES_PASSWORD: pamper
+          POSTGRES_DB: pamper_e2e
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgres://pamper:pamper@localhost:5432/pamper_e2e
+      BETTER_AUTH_SECRET: ci-e2e-secret-at-least-32-characters-long
+      BETTER_AUTH_URL: http://localhost:3000
+      ADMIN_WEB_URL: http://localhost:3003
+      BOOTSTRAP_ADMIN_EMAIL: admin@pamper.me
+      BOOTSTRAP_ADMIN_PASSWORD: e2e-test-password-123!
+      VITE_API_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v6
+      - uses: oven-sh/setup-bun@v2
+        with: { bun-version: "${{ env.BUN_VERSION }}" }
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install --with-deps chromium
+      - name: Run migrations
+        run: bunx drizzle-kit migrate
+        working-directory: packages/db
+      - name: Start API
+        run: bun run start &
+        working-directory: apps/api
+        env: { PORT: 3000 }
+      - name: Wait for API
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/healthz && echo "API ready" && break
+            sleep 1
+          done
+      - run: bun run seed
+      - name: Build admin-web
+        run: bun run build
+        working-directory: apps/admin-web
+      - name: Serve admin-web
+        run: bunx serve dist -p 3003 &
+        working-directory: apps/admin-web
+      - name: Wait for admin-web
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3003 && echo "admin-web ready" && break
+            sleep 1
+          done
+      - run: bunx playwright test
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/

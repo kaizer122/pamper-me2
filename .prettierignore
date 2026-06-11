@@ -1,0 +1,8 @@
+.agents/
+.scratch/
+docs/
+CONTEXT.md
+node_modules/
+dist/
+.next/
+.vinxi/

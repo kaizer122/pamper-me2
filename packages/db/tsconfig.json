@@ -1,0 +1,5 @@
+{
+  "extends": "@pamper-me/config/tsconfig.base",
+  "compilerOptions": { "outDir": "dist", "types": ["node"] },
+  "include": ["src", "drizzle.config.ts"]
+}
