@@ -35,5 +35,5 @@ if (process.env["NODE_ENV"] !== "test") {
   console.log(`API running on http://localhost:${port}`);
 }
 
-export default app;
+export { app };
 export type AppType = typeof app;
