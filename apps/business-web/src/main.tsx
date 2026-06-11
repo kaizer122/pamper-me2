@@ -6,11 +6,15 @@ import { routeTree } from "./routeTree.gen.js";
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
-  interface Register { router: typeof router; }
+  interface Register {
+    router: typeof router;
+  }
 }
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
 createRoot(root).render(
-  <StrictMode><RouterProvider router={router} /></StrictMode>
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>,
 );

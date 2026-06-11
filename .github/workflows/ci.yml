@@ -42,7 +42,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with: { bun-version: "${{ env.BUN_VERSION }}" }
       - run: bun install --frozen-lockfile
-      - run: bunx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore
+      - run: bunx prettier --check "**/*.{ts,tsx,json,md}" --ignore-path .gitignore --ignore-path .prettierignore
 
   test-api:
     name: API Tests + Migration

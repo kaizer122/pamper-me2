@@ -22,26 +22,31 @@ async function getAdminTotpSecret(): Promise<string> {
     .where(eq(schema.twoFactor.userId, userRow[0].id))
     .limit(1);
 
-  if (!tfRow[0]) throw new Error("TOTP secret not found — did you run the seed?");
+  if (!tfRow[0])
+    throw new Error("TOTP secret not found — did you run the seed?");
 
   return tfRow[0].secret;
 }
 
 test.describe("Admin login flow", () => {
-  test("bootstrap admin can log in with email + password + TOTP", async ({ page }) => {
+  test("bootstrap admin can log in with email + password + TOTP", async ({
+    page,
+  }) => {
     const email = process.env["BOOTSTRAP_ADMIN_EMAIL"] ?? "admin@pamper.me";
     const password = process.env["BOOTSTRAP_ADMIN_PASSWORD"];
     if (!password) throw new Error("BOOTSTRAP_ADMIN_PASSWORD env var required");
 
     await page.goto("/login");
-    await expect(page.getByRole("heading", { name: /Connexion Admin/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /Connexion Admin/i }),
+    ).toBeVisible();
 
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Mot de passe").fill(password);
     await page.getByRole("button", { name: /Se connecter/i }).click();
 
     await expect(
-      page.getByRole("heading", { name: /Authentification à deux facteurs/i })
+      page.getByRole("heading", { name: /Authentification à deux facteurs/i }),
     ).toBeVisible();
 
     const secret = await getAdminTotpSecret();
@@ -50,7 +55,9 @@ test.describe("Admin login flow", () => {
     await page.getByLabel("Code TOTP").fill(code);
     await page.getByRole("button", { name: /Vérifier/i }).click();
 
-    await expect(page.getByRole("heading", { name: /Admin Dashboard/i })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: /Admin Dashboard/i }),
+    ).toBeVisible();
     await expect(page).toHaveURL("/");
   });
 });

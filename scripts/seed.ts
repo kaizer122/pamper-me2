@@ -24,7 +24,10 @@ async function seed() {
     .limit(1);
 
   if (existing.length > 0 && existing[0]) {
-    console.log("Bootstrap admin already exists — skipping. User ID:", existing[0].id);
+    console.log(
+      "Bootstrap admin already exists — skipping. User ID:",
+      existing[0].id,
+    );
     process.exit(0);
   }
 
@@ -51,25 +54,40 @@ async function seed() {
     .where(eq(schema.user.email, BOOTSTRAP_ADMIN_EMAIL))
     .limit(1);
 
-  if (!newUser[0]) { console.error("User not found after creation"); process.exit(1); }
+  if (!newUser[0]) {
+    console.error("User not found after creation");
+    process.exit(1);
+  }
 
-  await db.update(schema.user).set({ kind: "admin" }).where(eq(schema.user.id, newUser[0].id));
+  await db
+    .update(schema.user)
+    .set({ kind: "admin" })
+    .where(eq(schema.user.id, newUser[0].id));
   console.log("Admin kind set. User ID:", newUser[0].id);
 
   // Sign in to get session cookie for TOTP enable call
   const signinRes = await fetch(`${API_URL}/api/auth/sign-in/email`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email: BOOTSTRAP_ADMIN_EMAIL, password: BOOTSTRAP_ADMIN_PASSWORD }),
+    body: JSON.stringify({
+      email: BOOTSTRAP_ADMIN_EMAIL,
+      password: BOOTSTRAP_ADMIN_PASSWORD,
+    }),
   });
 
   const sessionCookie = signinRes.headers.get("set-cookie");
-  if (!sessionCookie) { console.error("No session cookie after sign-in"); process.exit(1); }
+  if (!sessionCookie) {
+    console.error("No session cookie after sign-in");
+    process.exit(1);
+  }
 
   // Enable TOTP
   const totpRes = await fetch(`${API_URL}/api/auth/two-factor/enable`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Cookie: sessionCookie as string },
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: sessionCookie as string,
+    },
     body: JSON.stringify({ password: BOOTSTRAP_ADMIN_PASSWORD }),
   });
 
@@ -78,7 +96,10 @@ async function seed() {
     process.exit(1);
   }
 
-  const totpData = (await totpRes.json()) as { totpURI?: string; backupCodes?: string[] };
+  const totpData = (await totpRes.json()) as {
+    totpURI?: string;
+    backupCodes?: string[];
+  };
 
   console.log("\n=== TOTP Setup ===");
   console.log("Scan this URI with your authenticator app:");
@@ -90,4 +111,7 @@ async function seed() {
   console.log("\nSeed complete.");
 }
 
-seed().catch((err) => { console.error("Seed failed:", err); process.exit(1); });
+seed().catch((err) => {
+  console.error("Seed failed:", err);
+  process.exit(1);
+});

@@ -2,7 +2,9 @@
   "name": "@pamper-me/e2e",
   "version": "0.0.1",
   "private": true,
-  "scripts": { "test": "playwright test" },
+  "scripts": {
+    "test": "playwright test"
+  },
   "devDependencies": {
     "@pamper-me/db": "workspace:*",
     "@playwright/test": "^1.52.0",

@@ -9,8 +9,12 @@ export const user = pgTable("user", {
   emailVerified: timestamp("email_verified", { withTimezone: true }),
   image: text("image"),
   kind: userKindEnum("kind").notNull().default("client"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
 });
 
 export type User = typeof user.$inferSelect;
